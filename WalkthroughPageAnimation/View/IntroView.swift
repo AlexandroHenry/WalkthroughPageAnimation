@@ -11,6 +11,7 @@ struct IntroView: View {
     
     // MARK: Animation Properties
     @State var showWalkThroughScreens: Bool = false
+    @State var currentIndex: Int = 0
     
     var body: some View {
         ZStack {
@@ -19,9 +20,82 @@ struct IntroView: View {
             
             IntroScreen()
                 
+            WalkThroughScreens()
+            
             NavBar()
         }
         .animation(.interactiveSpring(response: 1.1, dampingFraction: 0.85, blendDuration: 0.85), value: showWalkThroughScreens)
+    }
+    
+    // MARK: WalkThrough Screens
+    @ViewBuilder
+    func WalkThroughScreens() -> some View {
+        GeometryReader {
+            let size = $0.size
+            
+            ZStack {
+                
+                // MARK: Walk Through Screens
+                ForEach(intros.indices, id: \.self) { index in
+                    ScreenView(size: size, index: index)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            // MARK: Next Button
+            .overlay(alignment: .bottom) {
+                Image(systemName: "chevron.right")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .frame(width: 55, height: 55)
+                    .foregroundColor(.white)
+                    .background {
+                        RoundedRectangle(cornerRadius: 30, style: .circular)
+                            .fill(Color("Blue"))
+                    }
+                    .onTapGesture {
+                        // MARK: Upadting Index
+                        currentIndex += 1
+                    }
+                    .offset(y: -90)
+            }
+            .offset(y: showWalkThroughScreens ? 0 : size.height)
+        }
+    }
+    
+    @ViewBuilder
+    func ScreenView(size: CGSize, index: Int) -> some View {
+        let intro = intros[index]
+        
+        VStack(spacing: 10) {
+            
+            Text(intro.title)
+                .font(.custom(sansBold, size: 28))
+                // MARK: Applying Offset For Each Screen's
+                .offset(x: -size.width * CGFloat(currentIndex - index))
+                // MARK: Adding Animation
+                // MARK: Adding Delay to Elements based On Index
+                // My Delay Starts From Top
+                // You can also modify code to start delay from Bottom
+                // Delay
+                // 0.2, 0.1, 0
+                // Adding Extra 0.2 For Current Index
+                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(currentIndex == index ? 0.2 : 0).delay(currentIndex == index ? 0.2 : 0), value: currentIndex)
+            
+            Text(dummyText)
+                .font(.custom(sansRegular, size: 14))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 30)
+                .offset(x: -size.width * CGFloat(currentIndex - index))
+                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(0.1).delay(currentIndex == index ? 0.2 : 0), value: currentIndex)
+            
+            Image(intro.imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 250, alignment: .top)
+                .padding(.horizontal, 20)
+                .offset(x: -size.width * CGFloat(currentIndex - index))
+                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(currentIndex == index ? 0 : 0.2).delay(currentIndex == index ? 0.2 : 0), value: currentIndex)
+        }
     }
     
     // MARK: Nav Bar
@@ -29,7 +103,14 @@ struct IntroView: View {
     func NavBar() -> some View {
         HStack {
             Button {
-                showWalkThroughScreens.toggle()
+                
+                // If Greater than Zero Then Eliminating Index
+                if currentIndex > 0 {
+                    currentIndex -= 1
+                } else {
+                    showWalkThroughScreens.toggle()
+                }
+                
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.title3)
