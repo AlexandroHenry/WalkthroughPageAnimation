@@ -39,6 +39,8 @@ struct IntroView: View {
                 ForEach(intros.indices, id: \.self) { index in
                     ScreenView(size: size, index: index)
                 }
+                
+                WelcomeView(size: size, index: intros.count)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             // MARK: Next Button
@@ -95,6 +97,34 @@ struct IntroView: View {
                 .padding(.horizontal, 20)
                 .offset(x: -size.width * CGFloat(currentIndex - index))
                 .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(currentIndex == index ? 0 : 0.2).delay(currentIndex == index ? 0.2 : 0), value: currentIndex)
+        }
+    }
+    
+    // MARK: Welcome Screen
+    @ViewBuilder
+    func WelcomeView(size: CGSize, index: Int) -> some View {
+        
+        VStack(spacing: 10) {
+            
+            Image("Welcome")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 250, alignment: .top)
+                .padding(.horizontal, 20)
+                .offset(x: -size.width * CGFloat(currentIndex - index))
+                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(currentIndex == index ? 0 : 0.2).delay(currentIndex == index ? 0.2 : 0), value: currentIndex)
+            
+            Text("Welcome")
+                .font(.custom(sansBold, size: 28))
+                .offset(x: -size.width * CGFloat(currentIndex - index))
+                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(currentIndex == index ? 0.2 : 0).delay(currentIndex == index ? 0.2 : 0), value: currentIndex)
+            
+            Text("Stay organised and live stress-free with\nyou-do app.")
+                .font(.custom(sansRegular, size: 14))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 30)
+                .offset(x: -size.width * CGFloat(currentIndex - index))
+                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(0.1).delay(currentIndex == index ? 0.2 : 0), value: currentIndex)
         }
     }
     
