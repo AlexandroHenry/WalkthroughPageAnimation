@@ -12,19 +12,29 @@ struct IntroView: View {
     // MARK: Animation Properties
     @State var showWalkThroughScreens: Bool = false
     @State var currentIndex: Int = 0
+    @State var showHomeView: Bool = false
     
     var body: some View {
         ZStack {
-            Color("BG")
-                .ignoresSafeArea()
-            
-            IntroScreen()
-                
-            WalkThroughScreens()
-            
-            NavBar()
+            if showHomeView {
+                Home()
+                    .transition(.move(edge: .trailing))
+            } else {
+                ZStack {
+                    Color("BG")
+                        .ignoresSafeArea()
+                    
+                    IntroScreen()
+                        
+                    WalkThroughScreens()
+                    
+                    NavBar()
+                }
+                .animation(.interactiveSpring(response: 1.1, dampingFraction: 0.85, blendDuration: 0.85), value: showWalkThroughScreens)
+                .transition(.move(edge: .leading))
+            }
         }
-        .animation(.interactiveSpring(response: 1.1, dampingFraction: 0.85, blendDuration: 0.85), value: showWalkThroughScreens)
+        .animation(.easeInOut(duration: 0.35), value: showHomeView)
     }
     
     // MARK: WalkThrough Screens
@@ -79,8 +89,13 @@ struct IntroView: View {
                         .fill(Color("Blue"))
                 }
                 .onTapGesture {
-                    // MARK: Upadting Index
-                    currentIndex += 1
+                    if currentIndex == intros.count {
+                        // Signup Action
+                        showHomeView = true
+                    } else {
+                        // MARK: Upadting Index
+                        currentIndex += 1
+                    }
                 }
                 .offset(y: isLast ? -40 : -90)
                 // Animation
@@ -265,7 +280,6 @@ struct IntroView_Previews: PreviewProvider {
 
 // MARK: Home View
 struct Home: View {
-    
     var body: some View {
         NavigationStack {
             Text("")
