@@ -30,6 +30,9 @@ struct IntroView: View {
     // MARK: WalkThrough Screens
     @ViewBuilder
     func WalkThroughScreens() -> some View {
+        
+        let isLast = currentIndex == intros.count
+        
         GeometryReader {
             let size = $0.size
             
@@ -45,20 +48,43 @@ struct IntroView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             // MARK: Next Button
             .overlay(alignment: .bottom) {
-                Image(systemName: "chevron.right")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .frame(width: 55, height: 55)
-                    .foregroundColor(.white)
-                    .background {
-                        RoundedRectangle(cornerRadius: 30, style: .circular)
-                            .fill(Color("Blue"))
+                // MARK: Converting Next Button Into SignUp Button
+                ZStack {
+                    Image(systemName: "chevron.right")
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .scaleEffect(!isLast ? 1 : 0.001)
+                        .opacity(!isLast ? 1 : 0)
+                    
+                    HStack {
+                        Text("Sign Up")
+                            .font(.custom(sansBold, size: 15))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Image(systemName: "arrow.right")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
                     }
-                    .onTapGesture {
-                        // MARK: Upadting Index
-                        currentIndex += 1
-                    }
-                    .offset(y: -90)
+                    .padding(.horizontal, 15)
+                    .scaleEffect(isLast ? 1 : 0.001)
+                    .frame(height: isLast ? nil : 0)
+                    .opacity(isLast ? 1 : 0)
+                }
+                .frame(width: isLast ? size.width / 1.5 : 55, height: isLast ? 50 : 55)
+                .foregroundColor(.white)
+                .background {
+                    RoundedRectangle(cornerRadius: isLast ? 10 :30, style: isLast ? .continuous : .circular)
+                        .fill(Color("Blue"))
+                }
+                .onTapGesture {
+                    // MARK: Upadting Index
+                    currentIndex += 1
+                }
+                .offset(y: isLast ? -40 : -90)
+                // Animation
+                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5), value: isLast)
             }
             .offset(y: showWalkThroughScreens ? 0 : size.height)
         }
