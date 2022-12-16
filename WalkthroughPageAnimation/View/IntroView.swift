@@ -86,6 +86,22 @@ struct IntroView: View {
                 // Animation
                 .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5), value: isLast)
             }
+            .overlay(alignment: .bottom, content: {
+                // MARK: Bottom Sign In Button
+                HStack(spacing: 5) {
+                    Text("Already have an account?")
+                        .font(.custom(sansRegular, size: 14))
+                        .foregroundColor(.gray)
+                    
+                    Button("Login") {
+                        
+                    }
+                    .font(.custom(sansBold, size: 14))
+                    .foregroundColor(Color("Blue"))
+                }
+                .offset(y: isLast ? -12 : 100)
+                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5), value: isLast)
+            })
             .offset(y: showWalkThroughScreens ? 0 : size.height)
         }
     }
@@ -138,25 +154,31 @@ struct IntroView: View {
                 .frame(height: 250, alignment: .top)
                 .padding(.horizontal, 20)
                 .offset(x: -size.width * CGFloat(currentIndex - index))
-                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(currentIndex == index ? 0 : 0.2).delay(currentIndex == index ? 0.2 : 0), value: currentIndex)
+                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(currentIndex == index ? 0 : 0.2).delay(currentIndex == index ? 0.1 : 0), value: currentIndex)
             
             Text("Welcome")
                 .font(.custom(sansBold, size: 28))
                 .offset(x: -size.width * CGFloat(currentIndex - index))
-                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(currentIndex == index ? 0.2 : 0).delay(currentIndex == index ? 0.2 : 0), value: currentIndex)
+                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(0.1).delay(currentIndex == index ? 0.1 : 0), value: currentIndex)
+                
             
             Text("Stay organised and live stress-free with\nyou-do app.")
                 .font(.custom(sansRegular, size: 14))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 30)
                 .offset(x: -size.width * CGFloat(currentIndex - index))
-                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(0.1).delay(currentIndex == index ? 0.2 : 0), value: currentIndex)
+                .animation(.interactiveSpring(response: 0.9, dampingFraction: 0.8, blendDuration: 0.5).delay(currentIndex == index ? 0.2 : 0).delay(currentIndex == index ? 0.1 : 0), value: currentIndex)
+     
         }
+        .offset(y: -30)
     }
     
     // MARK: Nav Bar
     @ViewBuilder
     func NavBar() -> some View {
+        
+        let isLast = currentIndex == intros.count
+        
         HStack {
             Button {
                 
@@ -172,15 +194,18 @@ struct IntroView: View {
                     .font(.title3)
                     .fontWeight(.semibold)
                     .foregroundColor(Color("Blue"))
+                    
             }
             
             Spacer()
             
             Button("Skip") {
-                
+                currentIndex = intros.count
             }
             .font(.custom(sansRegular, size: 14))
             .foregroundColor(Color("Blue"))
+            .opacity(isLast ? 0 : 1)
+            .animation(.easeInOut, value: isLast)
         }
         .padding(.horizontal, 14)
         .padding(.top, 10)
